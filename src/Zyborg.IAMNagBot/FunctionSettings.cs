@@ -37,6 +37,12 @@ namespace Zyborg.IAMNagBot
         /// Can be a channel (starts with '#`) or user (starts with `@`).
         public string AlwaysSlackTo { get; set; }
 
+        /// If set to a number greater than zero, then will stop sending
+        /// notifications after this number has been sent.
+        /// This is useful to impose a limit for a very large number of
+        /// IAM Users or to cap the limit very low for testing purpose.
+        public int NotificationCountLimit { get; set; } = 0;
+
         /// A URL that resolves to content to template content for a
         /// specific notification method, category and type.
         public string TemplateUrl { get; set; }

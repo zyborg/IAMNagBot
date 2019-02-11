@@ -25,6 +25,7 @@ You can configure the following settings:
 | **`AlwaysSlackTo`**          | If Slack support is enabled, this Slack address wil be used **always** regardless of an email tag on the IAM user.  Can be a channel (starts with '#`) or user (starts with `@`).
 | **Templates**
 | **`TemplateUrl`**            | A URL that resolves to content to template content for a specific notification method, category and type.  Defaults to a set of built-in generic templates (packaged in the assembly).  See more details below.
+| **`NotificationCountLimit`** | If set to a number greater than zero, then will stop after this number of notifications have been sent.  (int, default to 0)
 
 ## IAM User Tags
 

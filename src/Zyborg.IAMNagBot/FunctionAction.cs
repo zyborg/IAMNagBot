@@ -104,6 +104,8 @@ namespace Zyborg.IAMNagBot
         {
             var now = DateTime.Now;
 
+            var entryCount = 0;
+
             foreach (var entry in entries)
             {
                 if (entry.PasswordEnabled??false)
@@ -112,7 +114,10 @@ namespace Zyborg.IAMNagBot
                     CheckAccessKey(entry.User, "AccessKey_1", entry.AccessKey1LastRotated);
                 if (entry.AccessKey2Active??false)
                     CheckAccessKey(entry.User, "AccessKey_2", entry.AccessKey2LastRotated);
+                ++entryCount;
             }
+
+            LogLine($"Found [{entryCount}] entries in Credential Report.");
 
             void CheckPassword(string username, DateTime? lastRotated)
             {
@@ -169,6 +174,8 @@ namespace Zyborg.IAMNagBot
             // We'll re-use this to query for each user's tags
             var userTagsRequ = new ListUserTagsRequest();
 
+            var notifyCount = 0;
+
             foreach (var userNotifications in notifications)
             {
                 // Get tags for IAM user and extract the email and slack if they have them
@@ -204,8 +211,17 @@ namespace Zyborg.IAMNagBot
                 if (IsSlackEnabled)
                     await NotifyUserBySlack(username, userSlack, userNotifications.Value);
 
-                throw new Exception("STOPPING AFTER FIRST USER");
+                ++notifyCount;
+
+                if (_settings.NotificationCountLimit > 0
+                    && notifyCount >= _settings.NotificationCountLimit)
+                {
+                    LogLine("REACHED LIMIT OF NUMBER NOTIFICATIONS TO BE SENT -- STOPPING");
+                    break;
+                }
             }
+
+            LogLine($"Sent [{notifyCount}] notification(s) of a total of [{notifications.Count}]");
         }
 
         private async Task NotifyUserByEmail(string username, string emailAddress,
