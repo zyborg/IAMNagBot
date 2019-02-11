@@ -11,6 +11,7 @@ namespace Zyborg.IAMNagBot
 {
     public class Function
     {
+        public const string EnvVarsConfigPrefix = "NAGBOT_";
         public const string GenerateReportCommand = "generate-report";
 
         public const string RootAccountName = "<root_account>";
@@ -49,7 +50,7 @@ namespace Zyborg.IAMNagBot
             _sesClient = sesClient;
 
             _config = new ConfigurationBuilder()
-                .AddEnvironmentVariables()
+                .AddEnvironmentVariables(EnvVarsConfigPrefix)
                 .AddJsonFile("appsettings.json", optional: true)
                 .Build();
             System.Console.WriteLine("GOT CONFIG: "
