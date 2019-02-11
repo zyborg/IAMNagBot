@@ -7,6 +7,24 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <!--
+    This packages up any YAML-based templates into the assembly as embedded-resources.
+    These can be referenced in the app configuration using a special URL scheme:
+      asm-resource:///namespace.and.path.to.template.file.yml
+      asm-resource://<asm-context>/namespace.and.path.to.template.file.yml
+    
+    The <asm-context> is used to resolve the resource relative to an assembly
+    as follows:
+      _entry     = the entry-point assembly
+      _calling   = the calling assembly
+      _executing = the executing assembly (usually Zyborg.IAMNagBot)
+      (anything) = anything else will be interpreted as a valid type name,
+                   will be resolved and the owning assembly will be used
+    -->
+    <EmbeddedResource Include="templates/**/*.yml" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="Microsoft.Extensions.Configuration" Version="2.1.*" />
     <PackageReference Include="Microsoft.Extensions.Configuration.Binder" Version="2.1.*" />
     <PackageReference Include="Microsoft.Extensions.Configuration.EnvironmentVariables" Version="2.1.*" />
