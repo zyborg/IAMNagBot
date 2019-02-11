@@ -4,6 +4,7 @@ using System.IO;
 using System.Net;
 using System.Reflection;
 using System.Threading.Tasks;
+using Amazon.S3;
 using Newtonsoft.Json;
 
 namespace Zyborg.IAMNagBot
@@ -39,6 +40,19 @@ namespace Zyborg.IAMNagBot
                 var resName = url.PathAndQuery.Trim('/');
                 using (var res = asm.GetManifestResourceStream(resName))
                 using (var reader = new StreamReader(res))
+                {
+                    templateContent = await reader.ReadToEndAsync();
+                }
+            }
+            if (url.Scheme == "s3")
+            {
+                var bucketName = url.Host;
+                var objectKey = url.PathAndQuery.TrimStart('/');
+
+                using (var s3Client = new AmazonS3Client())
+                using (var resp = await s3Client.GetObjectAsync(bucketName, objectKey))
+                using (var stream = resp.ResponseStream)
+                using (var reader = new StreamReader(stream))
                 {
                     templateContent = await reader.ReadToEndAsync();
                 }
