@@ -85,6 +85,17 @@ So as an example, the Template URL can reference some HTTPS endpoint using these
 https://some-host-that-lambda-can-reach.com/some/path/to/templates/{{notification_method}}/{{notification.credential}}-{{notification.category}}.yml
 ```
 
+#### Special Support for S3 URls
+
+In addition to any URL that would be natively supported by the .NET platform for
+streaming content from, special support has been added for S3 URLs that will be
+accessed using the security context of the caller (i.e. the Lambda function).
+The format of the URL is as follows:
+
+```
+s3://bucket-name/path/to/object/key.ext
+```
+
 ### Template to YAML Deserialization
 
 There is one additional aspect to notification templates that needs to be taken into
