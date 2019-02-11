@@ -40,5 +40,8 @@ namespace Zyborg.IAMNagBot
         /// A URL that resolves to content to template content for a
         /// specific notification method, category and type.
         public string TemplateUrl { get; set; }
+            // The default URL is a special scheme that
+            // resolves to Assembly-embedded resource
+            = "asm-resource://_executing/Zyborg.IAMNagBot.templates.{{notification_method}}.{{notification.credential}}-{{notification.category}}.yml";
     }
 }

@@ -1,0 +1,25 @@
+Source: "{{email_from}}"
+Destination:
+  ToAddresses:
+    - "{{email_to}}"
+Message:
+  Subject:
+    Data: "[IAMNagBot] Access Key Expired!"
+  Body:
+    Text:
+      Data: |
+        Your Access Key {{notification.access_key_id}} for user account {{username}}
+        has been expired for {{notification.days_expired}} day(s).
+        
+        Please sign in to your account and rotate your Access Key today!
+    Html:
+      Data: |
+        <h1>Message from IAMNagBot</h1>
+        
+        <p>
+          Your Access Key <b><code>{{notification.access_key_id}}</code></b>
+          for user account <b><code>{{username}}</code></b>
+          has been expired for <b>{{notification.days_expired}}</b> day(s).
+        </p><p>
+          Please sign in to your account and rotate your Access Key today!
+        </p>

@@ -1,0 +1,10 @@
+channel: "{{slack_to}}"
+text: |
+  ```
+  TO: {{slack_to}}
+  ```
+
+  Your Access Key *`{{notification.access_key_id}}`* for user account *`{{username}}`*
+  will be expiring in *{{notification.days_left}}* day(s).
+  
+  Please sign in to your account and rotate your Access Key before it expires.
