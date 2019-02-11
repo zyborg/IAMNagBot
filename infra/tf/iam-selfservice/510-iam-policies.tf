@@ -4,6 +4,28 @@
 //  https://docs.aws.amazon.com/IAM/latest/UserGuide/id_credentials_passwords_enable-user-change.html
 //  https://docs.aws.amazon.com/IAM/latest/UserGuide/id_credentials_passwords_user-change-own.html
 
+
+variable "_selfservice_accesskey_policy_name" {
+    description = "The name to assign to the IAM Policy which allows self-service Access Key management."
+    default     = "IAM-SelfService-AccessKeys"
+}
+
+variable "_selfservice_password_policy_name" {
+    description = "The name to assign to the IAM Policy which allows self-service Password management."
+    default     = "IAM-SelfService-Password"
+}
+
+variable "_selfservice_accesskey_group_name" {
+    description = "The name to assign to the IAM Group which allows self-service Access Key management."
+    default     = "IAM-SelfService-AccessKeys"
+}
+
+variable "_selfservice_password_group_name" {
+    description = "The name to assign to the IAM Group which allows self-service Password management."
+    default     = "IAM-SelfService-Password"
+}
+
+
 data "aws_iam_policy_document" "iam_selfservice_accesskeys" {
     policy_id   = "IAM-SelfService-AccessKeys"
     statement {
