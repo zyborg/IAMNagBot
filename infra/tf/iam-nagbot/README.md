@@ -3,10 +3,10 @@
 This Terraform (TF) module supports deploying and configuring the IAMNagBot
 Lambda Function, and related supporting resources.
 
-Specifically it will create an IAM execution Role for the Lambda, the
-Lambda Function itself, CloudWatch Events rules for scheduled execution
-of the Lambda Function on a recurring basis, and all the necessary IAM
-resources (such as policies and roles) to allow everything to work
+Specifically it will create the Lambda Function itself, a couple
+CloudWatch Events rules for scheduled execution of the Lambda Function
+on a recurring basis, and all the necessary IAM resources
+(such as policies and roles) to allow everything to work
 together.
 
 ## Parameters
@@ -17,7 +17,7 @@ The following parameters are _required_:
 |-|-|
 | **`tf_tag_name`**      | The name of a resource Tag to assign to resources (see below).
 | **`tf_tag_value`**     | The value of a resource Tag to assign to resources (see below).
-| **`lambda_package`**   | Full path to the IAMNagBox Lambda package ZIP to be deployed.
+| **`lambda_package`**   | Full path to the IAMNagBox Lambda package ZIP to be deployed. (Get it from [here](https://github.com/zyborg/IAMNagBot/releases))
 | **`deploy_s3_bucket`** | The name of an S3 bucket to publish the Lambda package for deployment.
 | **`deploy_s3_key`**    | The key path in the S3 bucket to publish the Lambda package for deployment.
 | **`lambda_env_vars`**  | Specifies map of environment variables to adjust the configuration (see below).
@@ -122,10 +122,14 @@ module "iam-nagbot" {
         NAGBOT_DefaultSlackTo  = "#opsteam-channel"
 
         ## Uncomment for testing
-        #NAGBOT_AlwaysEmailTo  = "testing@ezstest.com"
+        #NAGBOT_AlwaysEmailTo  = "testing@example.com"
         #NAGBOT_AlwaysSlackTo   = "#testing-channel"
 
         NAGBOT_TemplateUrl = "s3://my-s3-bucket/iamnagbot-templates/{{notification_method}}/{{notification.credential}}-{{notification.category}}.yml"
+
+        ## We only process the report and send out
+        ## notifications on weekdays at 10am (EST)
+        NAGBOT__cwevents_process_cred_report_schedule = "cron(25 15 * * MON-FRI *)"
     }
 
     ## Override some defaults
