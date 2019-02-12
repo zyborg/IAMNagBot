@@ -67,7 +67,6 @@ resource "aws_iam_role" "iamnagbot_lambda" {
     assume_role_policy = "${data.aws_iam_policy_document.lambda_assume_role.json}"
 
     tags = "${map(
-        "Name",               "ROLE_AWS_CloudCheckr",
         "${var.tf_tag_name}", "${var.tf_tag_value}"
     )}"
 }
