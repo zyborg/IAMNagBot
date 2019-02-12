@@ -31,6 +31,8 @@ following parameters.
 | **`_lambda_role_policies`**    | `AWSLambdaVPCAccessExecutionRole` ARN | List of IAM Policy ARNs that will be attached to Lambda Role (see below).
 | **`_deploy_s3_storage_class`** | `REDUCED_REDUNDANCY`                  | Storage class used to store the Lambda package in S3.
 | **`_lambda_timeout`**          | `30`                                  | Lambda execution limit.  The default of 30s should be sufficient for most scenarios but can be overridden if your environment has a very large set of IAM Users to process.
+| **`_cwevents_generate_cred_report_schedule`** | `cron(20 13 * * ? *)`  | Specifies a cron or rate to invoke the generation of the Credential Report (see below).  Cron are always expressed in GMT.
+| **`_cwevents_process_cred_report_schedule`**  | `cron(25 13 * * ? *)`  | Specifies a cron or rate expression to invoke the processing of the Credential Report (see below).  Cron are always expressed in GMT.
 
 ### TF-identifying Tags
 
@@ -73,6 +75,28 @@ attach other permissions (via your own custom policies) that may grant
 access to other resources for the Lambda Function.  The most common use
 case for this would be to grant access to an S3 bucket (and key path)
 to the IAMNagBot Lambda to retrieve its message templates.
+
+### CloudWatch Events Scheduling
+
+By default, this TF configuration will create two (2) [CloudWatch Events](https://docs.aws.amazon.com/AmazonCloudWatch/latest/events/WhatIsCloudWatchEvents.html)
+rules that are schedule-driven.  The first will generate an IAM Credential Report
+and the second will process the generated report.  This two-step setup is
+necessary because of the asynchronous nature in the way that generating
+and then fetching a Credential Report works.
+
+By default the CWEvents schedule is setup to run _every day of the week_
+at `13:20 (GMT)` (`08:20 (EST)`) to generate the report
+and `13:25 (GMT)` (`08:25 (EST)`) to process the report and send out any
+notifications.  You can override the schedule by providing your own **rate**
+or **cron** expression per the CWEvents [Schedule Expression for Rules](https://docs.aws.amazon.com/AmazonCloudWatch/latest/events/ScheduledEvents.html).
+
+If you do override, the important thing to remember is that two rules should be
+scheduled relatively close, but that the Generate rule should come before the
+Process rule and give it ample time to complete the IAM report.  In practice this
+may only take a couple minutes but may depend on how many IAM users you have.
+
+Also remember, `cron` expressions are _always_ specified in GMT, so do the math
+to translate from your local timezone.
 
 ## Sample
 

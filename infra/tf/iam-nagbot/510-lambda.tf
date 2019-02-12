@@ -27,6 +27,16 @@ variable "_lambda_timeout" {
     default = "30"
 }
 
+variable "_cwevents_generate_cred_report_schedule" {
+    description = "Specifies a cron or rate expression to invoke the generation of the Credential Report.  Cron are always expressed in GMT."
+    default     = "cron(20 13 * * ? *)"
+}
+variable "_cwevents_process_cred_report_schedule" {
+    description = "Specifies a cron or rate expression to invoke the processing of the Credential Report.  Cron are always expressed in GMT."
+    default     = "cron(25 13 * * ? *)"
+}
+
+
 resource "aws_s3_bucket_object" "lambda_package" {
     bucket        = "${var.deploy_s3_bucket}"
     key           = "${var.deploy_s3_key}"
@@ -78,4 +88,49 @@ resource "aws_lambda_function" "iamnagbot" {
     environment {
         variables = "${var.lambda_env_vars}"
     }
+}
+
+
+## We setup 2 CloudWatch Events Rules on a scheduled basis
+##  * First, to generate a credential report
+##  * Second, to process the credential report
+
+resource "aws_cloudwatch_event_rule" "generate_cred_report" {
+    name        = "IAMNagBot_GenerateCredReport"
+    description = "Invokes IAMNagBot to generate an IAM Credential Report."
+    is_enabled  = true
+    schedule_expression = "${var._cwevents_generate_cred_report_schedule}"
+}
+resource "aws_lambda_permission" "cwevents" {
+    statement_id  = "CWEvents-Invoke-IAMNagBot-Generate"
+    principal     = "events.amazonaws.com"
+    source_arn    = "${aws_cloudwatch_event_rule.generate_cred_report.arn}"
+    action        = "lambda:InvokeFunction"
+    function_name = "${aws_lambda_function.iamnagbot.function_name}"
+}
+resource "aws_cloudwatch_event_target" "generate_cred_report" {
+    rule      = "${aws_cloudwatch_event_rule.generate_cred_report.name}"
+    arn       = "${aws_lambda_function.iamnagbot.arn}"
+    input     = "\"generate-report\""
+    target_id = "Generate-Credential-Report"
+}
+
+resource "aws_cloudwatch_event_rule" "process_cred_report" {
+    name        = "IAMNagBot_ProcessCredReport"
+    description = "Invokes IAMNagBot to process notifications against an IAM Credential Report."
+    is_enabled  = true
+    schedule_expression = "${var._cwevents_process_cred_report_schedule}"
+}
+resource "aws_lambda_permission" "cwevents_process_cred_report" {
+    statement_id  = "CWEvents-Invoke-IAMNagBot-Process"
+    principal     = "events.amazonaws.com"
+    source_arn    = "${aws_cloudwatch_event_rule.process_cred_report.arn}"
+    action        = "lambda:InvokeFunction"
+    function_name = "${aws_lambda_function.iamnagbot.function_name}"
+}
+resource "aws_cloudwatch_event_target" "process_cred_report" {
+    rule      = "${aws_cloudwatch_event_rule.process_cred_report.name}"
+    arn       = "${aws_lambda_function.iamnagbot.arn}"
+    input     = "null"
+    target_id = "Process-Credential-Report"
 }
