@@ -6,6 +6,20 @@ AWS Lambda to send out notifications about upcoming expirations for IAM resource
 
 NagBot currently supports sending out notifications via SES emails or Slack.
 
+## Deployment
+
+There are a pair of Terraform (TF) modules [included](./infra/tf) that provide...
+
+* [iam-nagbot](./infra/tf/iam-nagbot) - deployment and configuration of the IAMNagBot Lambda and supporting infrastructure
+* [iam-selfservice](./infra/tf/iam-selfservice) - convenient way to grant IAM permissions to users to manage their own credentials
+
+Each of the TF modules above have their own README's to describe their
+use and configuration.  If you don't currently use Terraform to manage
+your infrastructure, you should still be able to look over the TF module
+code and glean the necessary AWS resources and steps necessary to deploy
+the Lambda function, and translate that into other tooling such as
+CloudFormation or simple CLI scripts.
+
 ## Configuration
 
 You can configure the following settings:
