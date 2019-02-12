@@ -3,11 +3,11 @@
 This Terraform (TF) module supports deploying and configuring the IAMNagBot
 Lambda Function, and related supporting resources.
 
-Specifically it will create an IAM execution Role for the Lambda, and the
-Lambda Function itself.
-
-It also optionally, creates CloudWatch Events rules for scheduled execution
-of the Lambda Function on a recurring basis.
+Specifically it will create an IAM execution Role for the Lambda, the
+Lambda Function itself, CloudWatch Events rules for scheduled execution
+of the Lambda Function on a recurring basis, and all the necessary IAM
+resources (such as policies and roles) to allow everything to work
+together.
 
 ## Parameters
 
